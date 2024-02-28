@@ -12,11 +12,22 @@ export class BasketService {
   constructor(
     @InjectRepository(BasketItemEntity)
     private basketRepository: Repository<BasketItemEntity>,
-
     @InjectRepository(ProductEntity)
     private productRepository: Repository<ProductEntity>,
   ) {}
-
+  async calculateTotalPrice(basketItemId: number): Promise<void> {
+    const basketItem = await this.basketRepository
+      .createQueryBuilder('basketItem')
+      .leftJoinAndSelect('basketItem.product', 'product')
+      .where('basketItem.id = :id', { id: basketItemId })
+      .getOne();
+    console.log(basketItem);
+    console.log(basketItemId);
+    if (basketItem) {
+      basketItem.total = basketItem.product.price * basketItem.count;
+      await this.basketRepository.save(basketItem);
+    }
+  }
   async create(dto: CreateBasketItemDto): Promise<BasketItemEntity> {
     const basket = new BasketItemEntity();
     basket.count = dto.count;

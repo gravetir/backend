@@ -32,7 +32,7 @@ export class ProductEntity {
   workVoltage: string;
 
   @Column()
-  price: string;
+  price: number;
 
   @Column()
   currency: string;

@@ -29,8 +29,8 @@ export class CreateProductDto {
   @IsString()
   workVoltage = '220В';
   @ApiProperty()
-  @Type(() => String)
-  price: string;
+  @Type(() => Number)
+  price: number;
   @ApiProperty()
   @Type(() => String)
   @IsString()

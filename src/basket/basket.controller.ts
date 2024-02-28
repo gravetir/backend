@@ -22,8 +22,10 @@ export class BasketController {
   constructor(private readonly basketService: BasketService) {}
 
   @Post()
-  create(@Body() dto: CreateBasketItemDto): Promise<BasketItemEntity> {
-    return this.basketService.create(dto);
+  async create(@Body() dto: CreateBasketItemDto): Promise<BasketItemEntity> {
+    const basket = this.basketService.create(dto);
+    await this.basketService.calculateTotalPrice;
+    return basket;
   }
 
   @Get()
