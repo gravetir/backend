@@ -29,9 +29,9 @@ export class BasketItemEntity {
   })
   @JoinColumn()
   user: UserEntity;
-  getTotalPrice() {
-    let sum = 0;
-    sum = this.product.price * this.count;
-    return sum;
-  }
+  // getTotalPrice() {
+  //   let sum = 0;
+  //   sum = this.product.price * this.count;
+  //   return sum;
+  // }
 }

@@ -23,9 +23,7 @@ export class BasketController {
 
   @Post()
   async create(@Body() dto: CreateBasketItemDto): Promise<BasketItemEntity> {
-    const basket = this.basketService.create(dto);
-    await this.basketService.calculateTotalPrice;
-    return basket;
+    return await this.basketService.create(dto);
   }
 
   @Get()
