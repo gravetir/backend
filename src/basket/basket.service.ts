@@ -12,11 +12,9 @@ export class BasketService {
   constructor(
     @InjectRepository(BasketItemEntity)
     private basketRepository: Repository<BasketItemEntity>,
-
     @InjectRepository(ProductEntity)
     private productRepository: Repository<ProductEntity>,
   ) {}
-
   async create(dto: CreateBasketItemDto): Promise<BasketItemEntity> {
     const basket = new BasketItemEntity();
     basket.count = dto.count;
