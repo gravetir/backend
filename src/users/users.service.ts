@@ -7,11 +7,19 @@ import { UserEntity } from './entities/user.entity';
 
 @Injectable()
 export class UsersService {
+  userModel: any;
   constructor(
     @InjectRepository(UserEntity)
     private repository: Repository<UserEntity>,
   ) {}
-
+  async softDeleteUser(userId: string) {
+    const user = await this.userModel.findById(userId);
+    if (!user) {
+      throw new Error('User not found');
+    }
+    user.isDeleted = true;
+    return user.save();
+  }
   async create(dto: CreateUserDto) {
     const existingUser = await this.findByUsername(dto.username);
 

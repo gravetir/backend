@@ -15,6 +15,18 @@ export class BasketService {
     @InjectRepository(ProductEntity)
     private productRepository: Repository<ProductEntity>,
   ) {}
+  async calculateTotalPrice(basketItemId: number) {
+    const basketItem = await this.basketRepository
+      .createQueryBuilder('basketItem')
+      .leftJoinAndSelect('basketItem.product', 'product')
+      .where('basketItem.id = :id', { id: basketItemId })
+      .getOne();
+    if (!basketItem) {
+      throw new BadRequestException(' Не удаётся найти коризину с таким id');
+    }
+    basketItem.total = basketItem.product.price * basketItem.count;
+    return await this.basketRepository.save(basketItem);
+  }
   async create(dto: CreateBasketItemDto): Promise<BasketItemEntity> {
     const basket = new BasketItemEntity();
     basket.count = dto.count;
@@ -30,7 +42,7 @@ export class BasketService {
 
     await this.productRepository.save(product);
 
-    return newBasket;
+    return await this.calculateTotalPrice(newBasket.id);
   }
 
   async findAll(): Promise<BasketItemEntity[]> {

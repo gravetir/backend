@@ -7,7 +7,6 @@ import { BasketController } from './basket.controller';
 import { BasketItemEntity } from './entities/basket-item.entity';
 import { ProductModule } from 'src/product/product.module';
 import { ProductEntity } from 'src/product/entities/product.entity';
-
 @Module({
   imports: [
     ConfigModule,

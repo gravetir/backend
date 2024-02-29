@@ -22,8 +22,8 @@ export class BasketController {
   constructor(private readonly basketService: BasketService) {}
 
   @Post()
-  create(@Body() dto: CreateBasketItemDto): Promise<BasketItemEntity> {
-    return this.basketService.create(dto);
+  async create(@Body() dto: CreateBasketItemDto): Promise<BasketItemEntity> {
+    return await this.basketService.create(dto);
   }
 
   @Get()
