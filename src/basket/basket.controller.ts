@@ -6,48 +6,53 @@ import {
   Patch,
   Param,
   Delete,
-  Query,
+  UseGuards,
+  Request,
 } from '@nestjs/common';
-import { ApiQuery, ApiTags } from '@nestjs/swagger';
+import { BasketService } from './basket.service';
+import { CreateBasketItemDto } from './dto/create-basket-item.dto';
+import { JwtAuthGuard } from '../auth/guards/jwt.guard';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import { UpdateBasketItemDto } from './dto/update-basket-item.dto';
 import { DeleteResult } from 'typeorm';
 
-import { CreateBasketItemDto } from './dto/create-basket-item.dto';
-import { UpdateBasketItemDto } from './dto/update-basket-item.dto';
-import { BasketItemEntity } from './entities/basket-item.entity';
-import { BasketService } from './basket.service';
-
 @ApiTags('basket')
+@ApiBearerAuth()
+@UseGuards(JwtAuthGuard)
 @Controller('basket')
 export class BasketController {
-  constructor(private readonly basketService: BasketService) {}
+  constructor(private readonly BaketService: BasketService) {}
 
   @Post()
-  async create(@Body() dto: CreateBasketItemDto): Promise<BasketItemEntity> {
-    return await this.basketService.create(dto);
+  async CreateBasketItemDto(
+    @Body() dto: CreateBasketItemDto,
+    @Request() req: any,
+  ) {
+    return await this.BaketService.CreateBasketItemDto(dto, req.user);
   }
 
   @Get()
-  @ApiQuery({ name: 'productId', required: false })
-  findAll(@Query('productId') productId: number): Promise<BasketItemEntity[]> {
-    if (productId) return this.basketService.findByCategoryId(productId);
-    else return this.basketService.findAll();
+  get(@Request() req: any) {
+    return this.BaketService.get(req.user.id);
   }
 
-  @Get('/:id')
-  findOne(@Param('id') id: string): Promise<BasketItemEntity> {
-    return this.basketService.findOne(+id);
+  @Get('all')
+  findAll(@Request() req: any) {
+    return this.BaketService.findAll(req.user);
   }
 
-  @Patch(':id')
-  update(
-    @Param('id') id: string,
-    @Body() dto: UpdateBasketItemDto,
-  ): Promise<BasketItemEntity> {
-    return this.basketService.update(+id, dto);
+  @Get(':id')
+  findOne(@Param('id') id: string, @Request() req: any) {
+    return this.BaketService.findOne(+id, req.user);
+  }
+
+  @Patch()
+  async update(@Body() dto: UpdateBasketItemDto, @Request() req: any) {
+    return await this.BaketService.update(dto, req.user);
   }
 
   @Delete(':id')
-  delete(@Param('id') id: string): Promise<DeleteResult> {
-    return this.basketService.delete(+id);
+  delete(@Param('id') id: string, @Request() req: any): Promise<DeleteResult> {
+    return this.BaketService.remove(+id, req.user);
   }
 }

@@ -1,5 +1,5 @@
-import { ApiHideProperty } from '@nestjs/swagger';
-import { BasketItemEntity } from 'src/basket/entities/basket-item.entity';
+import { Basket } from 'src/basket/entities/basket.entity';
+import { Order } from 'src/order/entities/order.entity';
 import {
   Column,
   CreateDateColumn,
@@ -25,7 +25,9 @@ export class UserEntity {
 
   @UpdateDateColumn({ type: 'timestamp' })
   updatedAt: Date;
-  @ApiHideProperty()
-  @OneToOne(() => BasketItemEntity, (basket) => basket.user)
-  basket: BasketItemEntity[];
+
+  @OneToOne(() => Order, (order) => order.user)
+  order: Order;
+  @OneToOne(() => Basket, (basket) => basket.user)
+  basket: Basket;
 }

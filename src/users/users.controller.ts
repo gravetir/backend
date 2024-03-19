@@ -1,37 +1,31 @@
 import {
   Controller,
-  Get,
   Post,
   Body,
-  UseGuards,
+  Request,
   Delete,
-  Param,
+  UseGuards,
 } from '@nestjs/common';
-import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
-
-import { UsersService } from './users.service';
+import { UserService } from 'src/users/users.service';
 import { CreateUserDto } from './dto/create-user.dto';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import { DeleteResult } from 'typeorm';
 import { JwtAuthGuard } from '../auth/guards/jwt.guard';
-import { UserId } from '../decorators/user-id.decorator';
 
-@Controller('users')
-@ApiTags('users')
-export class UsersController {
-  constructor(private readonly usersService: UsersService) {}
-
-  @Post('register')
-  create(@Body() createUserDto: CreateUserDto) {
-    return this.usersService.create(createUserDto);
-  }
-
-  @Get('me')
-  @ApiBearerAuth()
+@ApiTags('user')
+@ApiBearerAuth()
+@Controller('user')
+export class UserController {
+  constructor(private readonly userService: UserService) {}
   @UseGuards(JwtAuthGuard)
-  getMe(@UserId() id: number) {
-    return this.usersService.findById(id);
+  @Post()
+  create(@Body() createUserDto: CreateUserDto) {
+    return this.userService.create(createUserDto);
   }
-  @Delete('/users/:id')
-  async delete(@Param('id') id: string) {
-    return this.usersService.softDeleteUser(id);
+
+  @UseGuards(JwtAuthGuard)
+  @Delete()
+  delete(@Request() req: any): Promise<DeleteResult> {
+    return this.userService.remove(req);
   }
 }

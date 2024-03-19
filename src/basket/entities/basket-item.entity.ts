@@ -3,35 +3,33 @@ import {
   Entity,
   JoinColumn,
   ManyToOne,
-  OneToOne,
+  OneToMany,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { ProductEntity } from 'src/product/entities/product.entity';
-import { UserEntity } from 'src/users/entities/user.entity';
-@Entity('basket')
+import { Basket } from './basket.entity';
+import { OrderItemEntity } from 'src/order/entities/order-item.entity';
+import { ApiHideProperty } from '@nestjs/swagger';
+
+@Entity()
 export class BasketItemEntity {
   @PrimaryGeneratedColumn()
   id: number;
 
   @Column()
-  count: number;
+  Count: number;
 
-  @Column({ default: 0 })
-  total: number;
+  @Column()
+  basketPrice: number;
 
-  @ManyToOne(() => ProductEntity, (product) => product.basket, {
-    eager: true,
-  })
+  // @ApiHideProperty()
+  // @OneToMany(() => OrderItemEntity, (orderItems) => orderItems.basket)
+  // orderItems: OrderItemEntity[];
+
+  @ManyToOne(() => ProductEntity, (product) => product.basket)
   @JoinColumn()
   product: ProductEntity;
-  @OneToOne(() => UserEntity, (user) => user.basket, {
-    eager: true,
-  })
-  @JoinColumn()
-  user: UserEntity;
-  // getTotalPrice() {
-  //   let sum = 0;
-  //   sum = this.product.price * this.count;
-  //   return sum;
-  // }
+
+  @ManyToOne(() => Basket, (basket) => basket.BasketItems)
+  basket: Basket;
 }

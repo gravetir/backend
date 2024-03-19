@@ -1,10 +1,12 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { IsNotEmpty } from 'class-validator';
 
 export class CreateBasketItemDto {
   @ApiProperty()
-  count: number;
-  @ApiProperty()
+  @IsNotEmpty()
   productId: number;
+
   @ApiProperty()
-  userId: number;
+  @IsNotEmpty()
+  count: number;
 }

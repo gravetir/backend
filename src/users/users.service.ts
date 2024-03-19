@@ -1,42 +1,56 @@
-import { Injectable, BadRequestException } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
-
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
+import { UpdateUserDto } from './dto/update-user.dto';
+import { InjectRepository } from '@nestjs/typeorm';
+import { DeleteResult, Repository } from 'typeorm';
 import { UserEntity } from './entities/user.entity';
+import { BasketService } from 'src/basket/basket.service';
 
 @Injectable()
-export class UsersService {
-  userModel: any;
+export class UserService {
   constructor(
     @InjectRepository(UserEntity)
-    private repository: Repository<UserEntity>,
+    private readonly userRepository: Repository<UserEntity>,
+    private readonly basketService: BasketService,
   ) {}
-  async softDeleteUser(userId: string) {
-    const user = await this.userModel.findById(userId);
-    if (!user) {
-      throw new Error('User not found');
-    }
-    user.isDeleted = true;
-    return user.save();
-  }
-  async create(dto: CreateUserDto) {
-    const existingUser = await this.findByUsername(dto.username);
+
+  async create(dto: CreateUserDto): Promise<UserEntity> {
+    const existingUser = await this.findByUserName(dto.username);
 
     if (existingUser) {
       throw new BadRequestException(
-        `Пользователь ${dto.username} уже существует`,
+        `Пользователь с именем: ${dto.username} уже существует`,
       );
     }
 
-    return this.repository.save(dto);
+    const user = await this.userRepository.save(dto); // Сохраняем пользователя
+
+    // Создаем корзину после регистрации
+    const basket = await this.basketService.create(user);
+    user.basket = basket;
+
+    await this.userRepository.save(user); // Обновляем пользователя с корзиной
+
+    return user;
   }
 
-  async findByUsername(username: string) {
-    return this.repository.findOneBy({ username });
+  async findByUserName(name: string): Promise<UserEntity> {
+    return this.userRepository.findOneBy({ username: name });
+  }
+
+  update(id: number, updateUserDto: UpdateUserDto) {
+    return `This action updates a #${id} user`;
   }
 
   async findById(id: number) {
-    return this.repository.findOneBy({ id });
+    return this.userRepository.findOneBy({
+      id,
+    });
+  }
+
+  async remove(req: any): Promise<DeleteResult> {
+    await this.basketService.removeBasket(req.user.id);
+
+    return await this.userRepository.delete(req.user.id);
   }
 }
