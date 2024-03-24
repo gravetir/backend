@@ -14,27 +14,32 @@ export class CreateProductDto {
   })
   image: Express.Multer.File;
 
+  // eslint-disable-next-line @typescript-eslint/no-inferrable-types
   @IsString()
-  title = 'Поршневой компрессор REMEZA СБ4/С-24.OLD15';
+  title: string = 'Поршневой компрессор REMEZA СБ4/С-24.OLD15';
+  // eslint-disable-next-line @typescript-eslint/no-inferrable-types
   @ApiProperty()
   @Type(() => String)
   @IsString()
-  driveUnit = 'Прямой';
+  driveUnit: string = 'Прямой';
+  // eslint-disable-next-line @typescript-eslint/no-inferrable-types
   @ApiProperty()
   @Type(() => String)
   @IsString()
-  typeEngine = 'Электрический';
+  typeEngine: string = 'Электрический';
+  // eslint-disable-next-line @typescript-eslint/no-inferrable-types
   @ApiProperty()
   @Type(() => String)
   @IsString()
-  workVoltage = '220В';
+  workVoltage: string = '220В';
   @ApiProperty()
   @Type(() => Number)
   price: number;
+  // eslint-disable-next-line @typescript-eslint/no-inferrable-types
   @ApiProperty()
   @Type(() => String)
   @IsString()
-  currency = '₽';
+  currency: string = '₽';
 
   @IsNumberString()
   categoryId: number;

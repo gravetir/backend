@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Order } from 'src/order/entities/order.entity';
 import { Repository } from 'typeorm';
@@ -19,20 +19,24 @@ export class OrderService {
     private readonly userService: UserService,
   ) {}
   async order(req: any, dto: CreateOrderDto) {
-    //find user existing orders
-    console.log(dto);
-    const user = await this.userService.findById(req.user.id);
     const userBasket = await this.basketService.getUserBasket(req.user);
-    const order = await this.create(user, dto);
-    order.orderItems = [];
-    order.status = dto.status;
-    order.shippingAddress = dto.shippingAddress;
+    if (userBasket.BasketItems.length == 0) {
+      throw new BadRequestException(
+        'You cannot create an order with an empty cart',
+      );
+    }
+    const order = await this.orderRepository.create({
+      status: dto.status,
+      shippingAddress: dto.shippingAddress,
+      totalPrice: 0,
+      user: req.user,
+      orderItems: [],
+    });
 
     for (let i = 0; i <= userBasket.BasketItems.length; i++) {
       if (userBasket.BasketItems[i] && userBasket.BasketItems[i].product) {
         const orderItem = this.orderitemRepository.create({
           product: userBasket.BasketItems[i].product,
-          order: order,
         });
         orderItem.orderPrice = userBasket.BasketItems[i].basketPrice;
         await this.orderitemRepository.save(orderItem);
@@ -46,11 +50,10 @@ export class OrderService {
     order.orderItems.forEach((a) => (sum += a.orderPrice));
     order.totalPrice = sum;
 
-    user.order = order;
+    order.user = req.user;
+    const orderNew = await this.orderRepository.save(order);
     await this.basketService.removeBasket(req.user.id);
-    await this.basketService.create(user);
-    // await this.basketService.delete(user.id);
-    await this.orderRepository.save(order);
+    return orderNew;
   }
 
   async getItemsFromBasket(user: any) {
@@ -59,11 +62,24 @@ export class OrderService {
   }
   async create(user: UserEntity, dto: CreateOrderDto) {
     const order = new Order();
-    order.status = 'В пути';
+    order.status = dto.status;
     order.shippingAddress = dto.shippingAddress;
     order.totalPrice = 0;
     order.user = user;
     await this.orderRepository.save(order);
     return order;
+  }
+  async getOrdersUser(req: any) {
+    const userOrder = await this.orderRepository.find({
+      relations: {
+        orderItems: {
+          product: true,
+        },
+      },
+      where: {
+        user: req.user,
+      },
+    });
+    return userOrder;
   }
 }

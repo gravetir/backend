@@ -1,10 +1,10 @@
 import {
   Controller,
   Post,
-  Get,
   Request,
   UseGuards,
   Body,
+  Get,
 } from '@nestjs/common';
 import { OrderService } from 'src/order/order.service';
 import { Order } from 'src/order/entities/order.entity';
@@ -22,5 +22,9 @@ export class OrderController {
   @Post('post')
   async getItemsFromBasket(@Body() dto: CreateOrderDto, @Request() req: any) {
     return await this.orderService.order(req, dto);
+  }
+  @Get('getOrders')
+  async getItemsFromOrder(@Request() req: any) {
+    return await this.orderService.getOrdersUser(req);
   }
 }
