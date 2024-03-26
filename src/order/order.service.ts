@@ -22,7 +22,7 @@ export class OrderService {
     const userBasket = await this.basketService.getUserBasket(req.user);
     if (userBasket.BasketItems.length == 0) {
       throw new BadRequestException(
-        'You cannot create an order with an empty cart',
+        'Вы не можете оформить заказ с пустой корзиной',
       );
     }
     const order = await this.orderRepository.create({

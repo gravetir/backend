@@ -65,7 +65,8 @@ export class BasketService {
     });
 
     userBasket.BasketItems.forEach((x) => x.product.title);
-
+    // Вывод заголовка
+    // Проверка на существование товара в корзине если да, то добавить, если нет вывести новый
     if (userBasket.BasketItems.some((x) => x.product.id == product.id)) {
       const cItem = userBasket.BasketItems.find(
         (x) => x.product.id == product.id,
