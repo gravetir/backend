@@ -141,7 +141,6 @@ export class BasketService {
         basket: userBasket,
       },
     });
-
     if (!basketItem) {
       throw new NotFoundException(
         'Товар с таким id не найден: ' + dto.productId,
