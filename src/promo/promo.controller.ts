@@ -23,13 +23,13 @@ import { DeleteResult } from 'typeorm';
 import { JwtAuthGuard } from 'src/auth/guards/jwt.guard';
 
 @ApiTags('promo')
-@ApiBearerAuth()
-@UseGuards(JwtAuthGuard)
 @Controller('promo')
 export class PromoController {
   constructor(private readonly promoService: PromoService) {}
 
   @Post()
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard)
   @ApiConsumes('multipart/form-data')
   @UseInterceptors(FileInterceptor('image', { storage: fileStorage }))
   create(
@@ -55,6 +55,8 @@ export class PromoController {
   }
 
   @Patch(':id')
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard)
   @ApiConsumes('multipart/form-data')
   @UseInterceptors(FileInterceptor('image', { storage: fileStorage }))
   update(
@@ -66,6 +68,8 @@ export class PromoController {
   }
 
   @Delete(':id')
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard)
   remove(@Param('id') id: string): Promise<DeleteResult> {
     return this.promoService.delete(+id);
   }
