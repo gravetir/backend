@@ -46,6 +46,10 @@ export class ProductController {
     if (categoryId) return this.productService.findByCategoryId(categoryId);
     else return this.productService.findAll();
   }
+  @Get('all')
+  findAllProduct() {
+    return this.productService.findAll();
+  }
 
   @Get('/image/:path')
   download(@Param('path') path: string, @Response() response) {

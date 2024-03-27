@@ -96,6 +96,9 @@ export class ProductService {
 
     return this.productRepository.save(toUpdate);
   }
+  findAllProduct() {
+    return this.productRepository.find();
+  }
 
   async delete(id: number): Promise<DeleteResult> {
     return this.productRepository.delete(id);
