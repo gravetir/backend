@@ -5,6 +5,8 @@ import {
   Request,
   Delete,
   UseGuards,
+  Get,
+  Param,
 } from '@nestjs/common';
 import { UserService } from 'src/users/users.service';
 import { CreateUserDto } from './dto/create-user.dto';
@@ -22,7 +24,6 @@ export class UserController {
   create(@Body() createUserDto: CreateUserDto) {
     return this.userService.create(createUserDto);
   }
-
   @UseGuards(JwtAuthGuard)
   @Delete()
   delete(@Request() req: any): Promise<DeleteResult> {

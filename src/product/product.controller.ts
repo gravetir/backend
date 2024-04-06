@@ -22,6 +22,9 @@ import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { ProductEntity } from './entities/product.entity';
 import { JwtAuthGuard } from 'src/auth/guards/jwt.guard';
+import { Role } from 'src/auth/role.enum';
+import { Roles } from 'src/decorators/roles.decorators';
+import { RolesGuard } from 'src/auth/guards/roles.guard';
 
 @ApiTags('product')
 @Controller('product')
@@ -30,7 +33,8 @@ export class ProductController {
 
   @Post()
   @ApiBearerAuth()
-  @UseGuards(JwtAuthGuard)
+  @Roles(Role.Admin)
+  @UseGuards(JwtAuthGuard, RolesGuard)
   @ApiConsumes('multipart/form-data')
   @UseInterceptors(FileInterceptor('image', { storage: fileStorage }))
   create(
@@ -63,7 +67,8 @@ export class ProductController {
 
   @Patch(':id')
   @ApiBearerAuth()
-  @UseGuards(JwtAuthGuard)
+  @Roles(Role.Admin)
+  @UseGuards(JwtAuthGuard, RolesGuard)
   @ApiConsumes('multipart/form-data')
   @UseInterceptors(FileInterceptor('image', { storage: fileStorage }))
   update(
@@ -76,7 +81,8 @@ export class ProductController {
 
   @Delete(':id')
   @ApiBearerAuth()
-  @UseGuards(JwtAuthGuard)
+  @Roles(Role.Admin)
+  @UseGuards(JwtAuthGuard, RolesGuard)
   delete(@Param('id') id: string): Promise<DeleteResult> {
     return this.productService.delete(+id);
   }

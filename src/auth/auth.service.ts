@@ -20,6 +20,9 @@ export class AuthService {
 
   async validateUser(username: string, password: string): Promise<any> {
     const user = await this.usersService.findByUserName(username);
+    // user.username = username;
+    // user.salt = await bcrypt.genSalt();
+    // user.password = await this.hashPassword(password, user.salt);
 
     if (user && user.password === password) {
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -35,22 +38,25 @@ export class AuthService {
     if (!isCreateUsers) {
       throw new BadRequestException('Запрещено создавать новых пользователей');
     }
-
     try {
       const userData = await this.usersService.create(dto);
 
-      return {
-        token: this.jwtService.sign({ id: userData.id }),
-      };
+      token: this.jwtService.sign({
+        id: userData.id,
+        role: userData.role.name,
+      });
     } catch (err) {
       // throw new ForbiddenException('Ошибка при регистрации');
       throw new ForbiddenException(err.message);
     }
   }
+  // private async hashPassword(password: string, salt: string): Promise<string> {
+  //   return bcrypt.hash(password, salt);
+  // }
 
   async login(user: UserEntity) {
     return {
-      token: this.jwtService.sign({ id: user.id }),
+      token: this.jwtService.sign({ id: user.id, role: user.role.name }),
     };
   }
 }

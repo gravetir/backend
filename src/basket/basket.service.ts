@@ -45,7 +45,7 @@ export class BasketService {
   }
 
   async CreateBasketItemDto(dto: CreateBasketItemDto, user: any) {
-    const product = await this.productService.findOne(dto.productId);
+    const product = await this.productService.getProductById(dto.productId);
 
     if (!product) {
       throw new NotFoundException(
@@ -137,7 +137,7 @@ export class BasketService {
         product: true,
       },
       where: {
-        product: await this.productService.findOne(dto.productId),
+        product: await this.productService.getProductById(dto.productId),
         basket: userBasket,
       },
     });
@@ -172,7 +172,7 @@ export class BasketService {
         product: true,
       },
       where: {
-        product: await this.productService.findOne(productId),
+        product: await this.productService.getProductById(productId),
         basket: userBasket,
       },
     });
