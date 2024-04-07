@@ -42,8 +42,8 @@ export class UserService {
   async createadmin(): Promise<void> {
     const admin = new UserEntity();
     admin.username = 'admin';
-    admin.password = '9854327';
-    admin.salt = '546588';
+    admin.salt = await bcrypt.genSalt();
+    admin.password = await this.hashPassword('985632', admin.salt);
     const role = await this.roleRepository.findOne({
       where: { id: 1 },
       relations: ['users'],
