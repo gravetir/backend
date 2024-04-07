@@ -9,6 +9,7 @@ import { ConfigService } from '@nestjs/config';
 import { UserEntity } from '../users/entities/user.entity';
 import { CreateUserDto } from '../users/dto/create-user.dto';
 import { UserService } from '../users/users.service';
+import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class AuthService {
@@ -20,17 +21,19 @@ export class AuthService {
 
   async validateUser(username: string, password: string): Promise<any> {
     const user = await this.usersService.findByUserName(username);
-    // user.username = username;
-    // user.salt = await bcrypt.genSalt();
-    // user.password = await this.hashPassword(password, user.salt);
-
-    if (user && user.password === password) {
+    const salt = user.salt;
+    const passwordhash = await this.hashPassword(password, salt);
+    console.log(passwordhash);
+    if (user && user.password === passwordhash) {
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const { password, ...result } = user;
       return result;
     }
 
     return null;
+  }
+  private async hashPassword(password: string, salt: string): Promise<string> {
+    return bcrypt.hash(password, salt);
   }
 
   async register(dto: CreateUserDto) {
@@ -50,9 +53,6 @@ export class AuthService {
       throw new ForbiddenException(err.message);
     }
   }
-  // private async hashPassword(password: string, salt: string): Promise<string> {
-  //   return bcrypt.hash(password, salt);
-  // }
 
   async login(user: UserEntity) {
     return {

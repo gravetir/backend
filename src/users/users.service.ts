@@ -43,6 +43,7 @@ export class UserService {
     const admin = new UserEntity();
     admin.username = 'admin';
     admin.password = '9854327';
+    admin.salt = '546588';
     const role = await this.roleRepository.findOne({
       where: { id: 1 },
       relations: ['users'],
