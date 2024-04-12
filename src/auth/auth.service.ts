@@ -23,7 +23,6 @@ export class AuthService {
     const user = await this.usersService.findByUserName(username);
     const salt = user.salt;
     const passwordhash = await this.hashPassword(password, salt);
-    console.log(passwordhash);
     if (user && user.password === passwordhash) {
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const { password, ...result } = user;

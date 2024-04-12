@@ -60,7 +60,7 @@ export class BasketService {
         },
       },
       where: {
-        user: user.id,
+        user: user,
       },
     });
 
@@ -130,6 +130,7 @@ export class BasketService {
         user: user.id,
       },
     });
+    const product = await this.productService.getProductById(dto.productId);
 
     const basketItem = await this.basketItemRepository.findOne({
       relations: {
@@ -137,8 +138,8 @@ export class BasketService {
         product: true,
       },
       where: {
-        product: await this.productService.getProductById(dto.productId),
-        basket: userBasket,
+        product: { id: product.id },
+        basket: { id: userBasket.id },
       },
     });
     if (!basketItem) {
@@ -148,6 +149,7 @@ export class BasketService {
     }
 
     basketItem.Count = dto.count;
+    basketItem.basketPrice = dto.count * basketItem.product.price;
     if (basketItem.Count == 0) {
       return await this.basketItemRepository.remove(basketItem);
     }
@@ -177,7 +179,7 @@ export class BasketService {
       },
     });
 
-    if (!BasketItemEntity) {
+    if (!basketItem) {
       throw new NotFoundException('Не нашлось товара с таким id: ' + productId);
     }
 

@@ -29,7 +29,7 @@ export class RolesGuard implements CanActivate {
       return false; // Если пользователь не аутентифицирован, отклоняем запрос
     }
     if (!requiredRoles.some((role) => user.role?.includes(role))) {
-      throw new ForbiddenException('You do not have access');
+      throw new ForbiddenException('У вас нет доступа');
     }
     return requiredRoles.some((role) => user.role?.includes(role));
   }
