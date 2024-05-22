@@ -1,5 +1,6 @@
-.env
+# .env
 # compiled output
+/db_images
 /dist
 /node_modules
 

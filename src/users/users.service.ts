@@ -43,7 +43,7 @@ export class UserService {
     const admin = new UserEntity();
     admin.username = 'admin';
     admin.salt = await bcrypt.genSalt();
-    admin.password = await this.hashPassword('985632', admin.salt);
+    admin.password = await this.hashPassword('985631', admin.salt);
     const role = await this.roleRepository.findOne({
       where: { id: 1 },
       relations: ['users'],
